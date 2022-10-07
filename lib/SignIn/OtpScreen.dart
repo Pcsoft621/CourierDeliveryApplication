@@ -1,4 +1,5 @@
 import 'package:deliviryapp_v1/SignIn/Phone_screen.dart';
+import 'package:deliviryapp_v1/SignIn/SignIn.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -28,7 +29,7 @@ class _OTPScreenState extends State<OTPScreen> {
       textStyle: TextStyle(fontSize: 20, color: Color.fromRGBO(30, 60, 87, 1), fontWeight: FontWeight.w600),
       decoration: BoxDecoration(
         border: Border.all(color: Color.fromRGBO(234, 239, 243, 1)),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(0),
       ),
     );
 
@@ -90,13 +91,22 @@ class _OTPScreenState extends State<OTPScreen> {
                   PhoneAuthCredential credential = 
                   PhoneAuthProvider.credential(verificationId: PhoneScreen.varify, smsCode: code);
                   await auth.signInWithCredential(credential);
-                  Navigator.pushNamedAndRemoveUntil(context, 'signin', (route) => false);                  }catch(e){
-
-                  }catch(e){}
+                  //Navigator.pushNamedAndRemoveUntil(context, 'signin', (route) => false);
+                  //Navigator.push(context, SignIn_Screen());
+                  Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => PhoneScreen()));
+                  Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => SignIn_Screen()));
+                 }
+                 catch(e){
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(e.toString())));
+                  }
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text("Varify",
                       )));
                       Navigator.pushNamed(context, "otp");
+                      
                 }, child: Text('Varify'),
               style: ElevatedButton.styleFrom(primary: Colors.amber,
               shape:RoundedRectangleBorder(

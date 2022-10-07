@@ -8,18 +8,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'SignIn/Phone_screen.dart';
-
-void main() async{
-  WidgetsFlutterBinding.ensureInitialized();  
+import 'SignIn/SignIn_Screen.dart';
+void main() async{ 
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    initialRoute: 'phone',
+    initialRoute: 'signin',
     routes: {
       'phone':(context) => PhoneScreen(),
       'otp':(context) => OTPScreen('12'),
-      'signin':(context) => SignIn_Screen(),
+      'signin':(context) => SignInScreen(),
     },
   ));
 }
