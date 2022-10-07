@@ -9,16 +9,18 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'SignIn/Phone_screen.dart';
 import 'SignIn/SignIn_Screen.dart';
+import 'Transporter/companydetail.dart';
 void main() async{ 
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    initialRoute: 'signin',
+    initialRoute: 'companydetails',
     routes: {
       'phone':(context) => PhoneScreen(),
       'otp':(context) => OTPScreen('12'),
       'signin':(context) => SignInScreen(),
+      'companydetails':((context) => Company()),
     },
   ));
 }
