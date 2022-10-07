@@ -87,6 +87,7 @@ class _PhoneScreenState extends State<PhoneScreen> {
             ],
           ),
         ),
-      )    );
+      )   
+       );
   }
 }
