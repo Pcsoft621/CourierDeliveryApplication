@@ -192,7 +192,7 @@ class _CompanyDetailsState extends State<CompanyDetails> {
     uploadTask.then((p0) async {
       companyDetails.companyIdentityUrl = await p0.ref.getDownloadURL();
       FirebaseFirestore.instance.collection("users").doc(uid).set(
-          {"companyDetails": companyDetails},
+          {"companyDetails": companyDetails.json},
           SetOptions(merge: true)).then((value) {
         Navigator.pop(context);
         Navigator.popAndPushNamed(context, AppRoutes.HOME_SCREEN);
