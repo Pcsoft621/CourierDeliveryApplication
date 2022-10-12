@@ -6,4 +6,6 @@ class AppRoutes {
   static const String SIGN_UP = "/sign-up";
   static const String COMPANY_DETAILS = "/company-details";
   static const String CONSUMER_DETAILS = "/consumer-details";
+  static const String CHOOSELOCATION = "/choose-location";
+  static const String STUSENT_DETAILS = "/student-details";
 }

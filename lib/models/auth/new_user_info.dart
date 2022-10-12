@@ -5,6 +5,9 @@ class NewUserInfo {
   String email = "";
   String address = "";
   bool isTransporter = false;
+  String adharNo="";
+  String adharUrl="";
+  String profileUrl="";
 
   NewUserInfo();
 
@@ -13,7 +16,10 @@ class NewUserInfo {
       lastName.isNotEmpty &&
       middleName.isNotEmpty &&
       email.isNotEmpty &&
-      address.isNotEmpty;
+      address.isNotEmpty&&
+      adharUrl.isNotEmpty&&
+      adharNo.isNotEmpty&&
+      profileUrl.isNotEmpty;
 
   Map<String, dynamic> get json => Map.of({
         "firstName": firstName,
@@ -21,6 +27,9 @@ class NewUserInfo {
         "middleName": middleName,
         "email": email,
         "address": address,
-        "isTransporter": isTransporter
+        "isTransporter": isTransporter,
+        "adharNo":adharNo,
+        "adharUrl":adharUrl,
+        "profileUrl":profileUrl,
       });
 }

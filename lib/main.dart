@@ -5,6 +5,8 @@ import 'package:easy_go/screens/auth/sign_in.dart';
 import 'package:easy_go/screens/auth/sign_up.dart';
 import 'package:easy_go/screens/common/splash_screen.dart';
 import 'package:easy_go/screens/home/home_screen.dart';
+import 'package:easy_go/screens/location/chooseLocation_screen.dart';
+import 'package:easy_go/screens/transporter/student_details_screen.dart';
 import 'package:easy_go/util/routes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -23,6 +25,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Easy Go',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -35,6 +38,8 @@ class MyApp extends StatelessWidget {
         AppRoutes.OTP_VERIFY: (context) => const OtpVerifyScreen(),
         AppRoutes.COMPANY_DETAILS: (context) => const CompanyDetails(),
         AppRoutes.HOME_SCREEN: (context) => const HomeScreen(),
+        AppRoutes.CHOOSELOCATION:((context) => const ChooseLocation()),
+        AppRoutes.STUSENT_DETAILS:(context) => const Student_Details_Screen(),
       },
     );
   }

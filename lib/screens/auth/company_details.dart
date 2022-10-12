@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_go/util/routes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -105,6 +104,7 @@ class _CompanyDetailsState extends State<CompanyDetails> {
                   menuMaxHeight: 400,
                   items: [
                     const DropdownMenuItem(
+                      
                         child: Text(
                           "Select Company Type",
                         ),
