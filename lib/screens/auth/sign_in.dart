@@ -64,7 +64,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     ? null
                     : () async {
                         await FirebaseAuth.instance.verifyPhoneNumber(
-                          phoneNumber: "+91" + phone_no,
+                          phoneNumber: "+91$phone_no",
                           verificationCompleted:
                               (PhoneAuthCredential credential) {},
                           verificationFailed: (FirebaseAuthException e) {
@@ -73,15 +73,12 @@ class _SignInScreenState extends State<SignInScreen> {
                                     content: Text(
                               "Verification Failed.. Please try again..",
                             )));
-                            Future.delayed(const Duration(seconds: 2), () {
-                              Navigator.popAndPushNamed(
-                                  context, AppRoutes.SIGN_IN);
-                            });
+                            Navigator.pop(context);
                           },
                           codeSent: (String verificationId, int? resendToken) {
                             Navigator.pushNamed(
                               context,
-                              AppRoutes.OTP_VERIFY,
+                              AppRoutes.otpVerify,
                               arguments: OtpVerifyScreenArguments(
                                 verificationId,
                                 resendToken: resendToken,
@@ -90,9 +87,21 @@ class _SignInScreenState extends State<SignInScreen> {
                           },
                           codeAutoRetrievalTimeout: (String verificationId) {},
                         );
-                        setState(() {
-                          phone_no = phone_no.substring(1);
-                        });
+                        showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) {
+                              return AlertDialog(
+                                content: Row(
+                                  children: [
+                                    const CircularProgressIndicator(),
+                                    Container(
+                                        margin: const EdgeInsets.only(left: 7),
+                                        child: const Text("Sending OTP...")),
+                                  ],
+                                ),
+                              );
+                            });
                       },
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.amber,

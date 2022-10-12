@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:easy_go/models/auth/new_user_info.dart';
-import 'package:easy_go/util/routes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import 'package:easy_go/models/auth/new_user_info.dart';
+import 'package:easy_go/util/routes.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -12,7 +13,7 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  final userInfo = NewUserInfo();
+  final userInfo = NewUserInfo("", "", "", "", "", "", false, false);
   final List<bool> isSelected = [true, false];
 
   final _formKey = GlobalKey<FormState>();
@@ -21,13 +22,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Title(
-          child: Text('SignIn...'),
           color: Colors.black,
+          child: const Text('Sign Up'),
         ),
       ),
       body: Scaffold(
         body: Container(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: Form(
             key: _formKey,
             child: SingleChildScrollView(
@@ -40,7 +41,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           : null;
                     },
                     onChanged: (value) => userInfo.firstName = value,
-                    autofillHints: [AutofillHints.givenName],
+                    autofillHints: const [AutofillHints.givenName],
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(
@@ -59,7 +60,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           : null;
                     },
                     onChanged: (value) => userInfo.middleName = value,
-                    autofillHints: [AutofillHints.middleName],
+                    autofillHints: const [AutofillHints.middleName],
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(
@@ -78,7 +79,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     },
                     onChanged: (value) => userInfo.lastName = value,
                     keyboardType: TextInputType.name,
-                    autofillHints: [AutofillHints.familyName],
+                    autofillHints: const [AutofillHints.familyName],
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(
@@ -92,7 +93,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   TextFormField(
                     onChanged: (value) => userInfo.email = value,
                     keyboardType: TextInputType.emailAddress,
-                    autofillHints: [AutofillHints.email],
+                    autofillHints: const [AutofillHints.email],
                     validator: validateEmail,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(
@@ -112,7 +113,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           : null;
                     },
                     onChanged: (value) => userInfo.address = value,
-                    autofillHints: [AutofillHints.postalAddress],
+                    autofillHints: const [AutofillHints.postalAddress],
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(
@@ -163,6 +164,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                   const SizedBox(height: 40.0),
+                  userInfo.isTransporter
+                      ? TextFormField(
+                          onChanged: (value) => userInfo.aadharNo = value,
+                          keyboardType: TextInputType.number,
+                          maxLength: 12,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                              Radius.circular(6.0),
+                            )),
+                            fillColor: Colors.black,
+                            labelText: 'Aadhar No',
+                            hintText: "000000000000",
+                          ),
+                        )
+                      : const SizedBox(height: 60.0),
+                  const SizedBox(height: 40.0),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -189,17 +207,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               FirebaseFirestore.instance
                                   .collection("users")
                                   .doc(FirebaseAuth.instance.currentUser!.uid)
-                                  .set(userInfo.json, SetOptions(merge: true))
+                                  .set(
+                                      userInfo.toMap(), SetOptions(merge: true))
                                   .then((value) {
                                 if (userInfo.isTransporter) {
                                   Navigator.pushNamedAndRemoveUntil(
                                       context,
-                                      AppRoutes.COMPANY_DETAILS,
+                                      AppRoutes.transporterDetails,
                                       (route) => false);
                                 } else {
                                   Navigator.pushNamedAndRemoveUntil(
                                       context,
-                                      AppRoutes.CONSUMER_DETAILS,
+                                      AppRoutes.consumerDetails,
                                       (route) => false);
                                 }
                               });

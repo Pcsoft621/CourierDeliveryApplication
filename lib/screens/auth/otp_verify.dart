@@ -74,6 +74,18 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
                         ? null
                         : () async {
                             try {
+                              showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Row(
+                                        children: const [
+                                          CircularProgressIndicator(),
+                                        ],
+                                      ),
+                                    );
+                                  });
                               PhoneAuthCredential credential =
                                   PhoneAuthProvider.credential(
                                       verificationId: args.verificationId,
@@ -81,6 +93,7 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
                               FirebaseAuth.instance
                                   .signInWithCredential(credential)
                                   .then((value) {
+                                Navigator.pop(context);
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content:
@@ -90,10 +103,10 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
                                 if (value.additionalUserInfo != null &&
                                     value.additionalUserInfo!.isNewUser) {
                                   Navigator.pushNamedAndRemoveUntil(context,
-                                      AppRoutes.SIGN_UP, (route) => false);
+                                      AppRoutes.signUp, (route) => false);
                                 } else {
                                   Navigator.pushNamedAndRemoveUntil(context,
-                                      AppRoutes.SPLASH, (route) => false);
+                                      AppRoutes.splash, (route) => false);
                                 }
                               });
                             } catch (e) {

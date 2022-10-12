@@ -195,7 +195,7 @@ class _CompanyDetailsState extends State<CompanyDetails> {
           {"companyDetails": companyDetails.json},
           SetOptions(merge: true)).then((value) {
         Navigator.pop(context);
-        Navigator.popAndPushNamed(context, AppRoutes.HOME_SCREEN);
+        Navigator.popAndPushNamed(context, AppRoutes.home);
       });
     });
   }

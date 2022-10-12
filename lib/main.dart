@@ -5,6 +5,7 @@ import 'package:easy_go/screens/auth/sign_in.dart';
 import 'package:easy_go/screens/auth/sign_up.dart';
 import 'package:easy_go/screens/common/splash_screen.dart';
 import 'package:easy_go/screens/home/home_screen.dart';
+import 'package:easy_go/screens/user/transporter_details_form.dart';
 import 'package:easy_go/util/routes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -27,14 +28,15 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: AppRoutes.SPLASH,
+      initialRoute: AppRoutes.transporterDetails,
       routes: {
-        AppRoutes.SPLASH: (context) => const SplashScreen(),
-        AppRoutes.SIGN_IN: (context) => const SignInScreen(),
-        AppRoutes.SIGN_UP: (context) => const SignUpScreen(),
-        AppRoutes.OTP_VERIFY: (context) => const OtpVerifyScreen(),
-        AppRoutes.COMPANY_DETAILS: (context) => const CompanyDetails(),
-        AppRoutes.HOME_SCREEN: (context) => const HomeScreen(),
+        AppRoutes.splash: (context) => const SplashScreen(),
+        AppRoutes.signIn: (context) => const SignInScreen(),
+        AppRoutes.signUp: (context) => const SignUpScreen(),
+        AppRoutes.otpVerify: (context) => const OtpVerifyScreen(),
+        AppRoutes.transporterDetails: (context) =>
+            const TransporterDetailsForm(),
+        AppRoutes.home: (context) => const HomeScreen(),
       },
     );
   }

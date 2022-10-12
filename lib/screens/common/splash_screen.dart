@@ -24,13 +24,13 @@ class _SplashScreenState extends State<SplashScreen> {
       final firestore = FirebaseFirestore.instance;
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
-        Navigator.popAndPushNamed(context, AppRoutes.SIGN_IN);
+        Navigator.popAndPushNamed(context, AppRoutes.signIn);
       } else {
         firestore.collection("users").doc(user.uid).get().then((value) {
           if (value.exists) {
-            Navigator.popAndPushNamed(context, AppRoutes.HOME_SCREEN);
+            Navigator.popAndPushNamed(context, AppRoutes.home);
           } else {
-            Navigator.popAndPushNamed(context, AppRoutes.SIGN_UP);
+            Navigator.popAndPushNamed(context, AppRoutes.signUp);
           }
         });
       }
