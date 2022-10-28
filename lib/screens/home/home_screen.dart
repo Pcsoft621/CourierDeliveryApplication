@@ -1,4 +1,5 @@
 import 'package:easy_go/screens/common/help.dart';
+import 'package:easy_go/screens/consumer/post_courier_screen.dart';
 import 'package:easy_go/screens/transporter/track_transporter_curr_trans.dart';
 import 'package:easy_go/screens/transporter/transporter_Profile_Screen.dart';
 import 'package:flutter/material.dart';
@@ -56,7 +57,7 @@ List<T> map<T>(List list, Function handler) {
         onPressed: (){
           Navigator.push(
                 context,
-          MaterialPageRoute(builder: (context) => const Helppage()),);
+          MaterialPageRoute(builder: (context) => const HelpPage()),);
         },
         tooltip: 'Increment',
         child: const Icon(Icons.help),
@@ -137,15 +138,12 @@ List<T> map<T>(List list, Function handler) {
       ListTile(
         
         leading: const Icon(Icons.list),
-        title: const Text('All transporters List', 
+        title: const Text('Post Courier', 
         ),
         onTap: () {
-          //Navigator.popAndPushNamed(context, 'transportersList');
-          //Navigator.pushNamed(context, 'transportersList');
-            /*Navigator.push(
-                context,
-          MaterialPageRoute(builder: (context) => const TransportersList()),
-          );*/
+           Navigator.push(context,MaterialPageRoute(
+              builder: (context) => const CourierDetails()
+            ));
 
           //Navigator.pushNamed(context, "otp");
              // Add Navigation logic here
@@ -192,7 +190,7 @@ List<T> map<T>(List list, Function handler) {
         onTap: () {
                 Navigator.push(
                 context,
-          MaterialPageRoute(builder: (context) => const Helppage()),
+          MaterialPageRoute(builder: (context) => const HelpPage()),
           );
              // Add Navigation logic here
         },

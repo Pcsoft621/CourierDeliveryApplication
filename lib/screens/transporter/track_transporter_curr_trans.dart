@@ -13,6 +13,7 @@ class _Current_tran_TransporterState extends State<Current_tran_Transporter> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text('My Current Transaction'),),
       body:  Container(
       padding: const EdgeInsets.all(20),
        child: Column(

@@ -43,8 +43,13 @@ dependencies:
   geolocator: ^9.0.1
   carousel_slider: ^4.1.1
   firebase_database: ^9.0.20
+  url_launcher: ^6.1.6
+  flutter_email_sender: ^5.0.2
+  
   
   awesome_snackbar_content: ^0.0.8
+  firebase_messaging: ^10.0.1
+  
 
 dev_dependencies:
   flutter_lints: ^2.0.0

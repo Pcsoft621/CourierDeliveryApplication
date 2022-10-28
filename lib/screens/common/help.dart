@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
-class Helppage extends StatefulWidget {
-  const Helppage({ Key? key }) : super(key: key);
+import 'package:easy_go/util/routes.dart';
+import 'package:easy_go/screens/common/contact_us.dart';
+import 'package:easy_go/util/routes.dart';
+import 'package:easy_go/screens/home/home_screen.dart';
+class HelpPage extends StatefulWidget {
+  const HelpPage({ Key? key }) : super(key: key);
 
   @override
-  State<Helppage> createState() => _HelppageState();
+  State<HelpPage> createState() => _HelpPageState();
 }
 
 String? selectone;
-class _HelppageState extends State<Helppage> {
+class _HelpPageState extends State<HelpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,6 +31,10 @@ class _HelppageState extends State<Helppage> {
               size: 24.0,
                ),
               onPressed: () {
+                  Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const Sendmail()),
+                             );
                 //action
               },
               label: const Text('Contact us',

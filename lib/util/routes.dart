@@ -8,4 +8,5 @@ class AppRoutes {
   static const String CONSUMER_DETAILS = "/consumer-details";
   static const String CHOOSELOCATION = "/choose-location";
   static const String STUSENT_DETAILS = "/student-details";
+  static const String CONTACT_US_EMAIL = "/contact-us-email";
 }
