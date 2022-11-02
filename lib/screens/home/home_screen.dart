@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:easy_go/screens/transporter/traveling_Details_Screen.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_go/screens/consumer/reciversList_Screen.dart';
+import 'package:easy_go/screens/transporter/current_transaction_list_transporter.dart';
+import 'package:easy_go/screens/consumer/specific_courier_details.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -107,6 +109,10 @@ List<T> map<T>(List list, Function handler) {
                      style: TextStyle(color: Colors.black)),
          onTap: () {
              // Add Navigation logic here
+            Navigator.push(context,MaterialPageRoute(
+              builder: (context) => const CurrentTransactionsForTr()
+            )); 
+
         },
       ),
       ListTile(
@@ -181,6 +187,10 @@ List<T> map<T>(List list, Function handler) {
         ),
         onTap: () {
              // Add Navigation logic here
+             Navigator.push(
+                context,
+          MaterialPageRoute(builder: (context) => const SpecificCourierDetails()),
+          );
         },
       ),
       ListTile(
@@ -192,7 +202,8 @@ List<T> map<T>(List list, Function handler) {
                 context,
           MaterialPageRoute(builder: (context) => const HelpPage()),
           );
-             // Add Navigation logic here
+             // te root use krun hot nsty ka hit mi krun bgitl zal ny call 
+             // ky kl nahi ky ny rahude ja tu ata 
         },
       )
       ])),
