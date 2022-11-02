@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:easy_go/screens/consumer/specific_courier_details.dart';
+import 'package:easy_go/screens/consumer/specific_courier_details_scren.dart';
 
 class CurrentTransactionsForTr extends StatefulWidget {
   const CurrentTransactionsForTr({super.key});

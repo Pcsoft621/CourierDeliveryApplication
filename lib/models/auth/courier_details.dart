@@ -1,22 +1,20 @@
 class Courier_Details{
 
-  /*productName=TextEditingController();
-  final productWeight=TextEditingController();
-  final locationFrom=TextEditingController();
-  final locationTo=TextEditingController();
-  final productReceiver=TextEditingController();
-  final productCharges=TextEditingController();
-  final productDescription=TextEditingController();*/
+  
   String courierName = "";
   String courierWeight = "";
   String locationFrom = "";
   String locationTo= "";
-  String courierReceiver = "";
+  String courierReceiverName = "";
+  String courierReceiverId= "";
+  String courierSender = "";
   String courierType = "";
   //bool isTransporter = false;
   String courierCharges="";
   String courierDescription="";
   String courierImageUrl="";
+  String courierSenderName= "";
+  String courierSenderId= "";
 
 
    Map<String, dynamic> get json => Map.of({
@@ -26,7 +24,10 @@ class Courier_Details{
         "courierWeight":courierWeight,
         "courierDescription":courierDescription,
         "courierImageUrl":courierImageUrl,
-        "courierReceiver": courierReceiver,
+        "courierReceiverName": courierReceiverName,
+        "courierReceiverId": courierReceiverId,
+        "courierSenderName": courierSenderName,
+        "courierSenderId": courierSenderId,
         "locationFrom":locationFrom,
         "locationTo":locationTo,
       });

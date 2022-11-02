@@ -13,6 +13,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:easy_go/models/auth/company_details.dart' as cd;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_go/util/routes.dart';
+import 'package:easy_go/util/firebase.dart';
+
 
 class CourierDetails extends StatefulWidget {
   const CourierDetails({super.key});
@@ -32,7 +34,9 @@ class _Courier_DetailsState extends State<CourierDetails> {
   final productReceiver = TextEditingController();
   final productCharges = TextEditingController();
   final productDescription = TextEditingController();
-  String courierReciverName = "";
+  final uid = FirebaseAuth.instance.currentUser!.uid;
+  Map<String, dynamic>? user;
+  String courierReciverName = "",courierReceiverId = "";
   String imageUrl = "";
   List type = [
     {"title": "Box", "value": "1"},
@@ -140,6 +144,18 @@ class _Courier_DetailsState extends State<CourierDetails> {
                 ),
               ),
             ),
+            Material(
+              elevation: 4.0,
+              shadowColor: Colors.grey,
+              child: TextField(
+                controller: locationTo,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  fillColor: Colors.black,
+                  labelText: 'Location To:',
+                ),
+              ),
+            ),
             const SizedBox(height: 12.0),
             Material(
               elevation: 4.0,
@@ -167,24 +183,12 @@ class _Courier_DetailsState extends State<CourierDetails> {
                             builder: (context) => ReciversList(),
                           )) as Map<String, dynamic>;
                           setState(() {
-                            courierReciverName=user["uid"];
+                            courierReceiverId=user["uid"];
                           });
                     }),
               ),
             ),
-            const SizedBox(height: 12.0),
-            Material(
-              elevation: 4.0,
-              shadowColor: Colors.grey,
-              child: TextField(
-                controller: locationTo,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  fillColor: Colors.black,
-                  labelText: 'Choosed Reciver:',
-                ),
-              ),
-            ),
+            
             const SizedBox(height: 12.0),
             Material(
               elevation: 4.0,
@@ -245,33 +249,30 @@ class _Courier_DetailsState extends State<CourierDetails> {
                     courierDetails.courierImageUrl = imageUrl;
                     courierDetails.courierCharges = productCharges.text;
                     courierDetails.courierType = couriertype;
-                    courierDetails.courierReceiver = courierReciverName;
-                    courierDetails.locationFrom = locationFrom.text;
-                    courierDetails.locationTo = locationTo.text;
+                    courierDetails.courierReceiverId = courierReceiverId;
+                    courierDetails.locationFrom = locationFrom.text.toLowerCase();
+                    courierDetails.locationTo = locationTo.text.toLowerCase();
                     courierDetails.courierDescription = productDescription.text;
+                    courierDetails.courierSenderId=uid;
+                    //courierDetails.courierSenderName=getUserName(uid).toString();
+                    /*Future future=getUserName(uid).then((value){
+                      print("in future"+value.toString());
+                      courierReciverName=value;
+                    });*/
+                    
+                    
                     saveCourierDetails(courierDetails);
+                    
                     showDialog(
-                      context: context,
-                      builder: (context) {
+                         context: context,
+                         builder: (context) {
                         return AlertDialog(
-                          content: Text(productName.text +
-                              " " +
-                              couriertype +
-                              " " +
-                              productWeight.text +
-                              " " +
-                              productCharges.text +
-                              " " +
-                              locationFrom.text +
-                              " " +
-                              locationTo.text +
-                              " " +
-                              productReceiver.text +
-                              " " +
-                              productDescription.text),
+                              content: Text( "this."+courierReciverName + " "+
+                              " " + ""+" "),
                         );
                       },
-                    );
+                   );
+                    
                   },
                   child: const Text(
                     'SUBMIT',
@@ -288,16 +289,31 @@ class _Courier_DetailsState extends State<CourierDetails> {
 
   void saveCourierDetails(c.Courier_Details courierDetails) {
     final uid = FirebaseAuth.instance.currentUser!.uid;
+    courierDetails.courierSender= uid;
     final ref = storage.ref("images/courierdetails/").child("$uid/");
     final uploadTask = ref.putFile(File(imageUrl));
     uploadTask.then((p0) async {
       courierDetails.courierImageUrl = await p0.ref.getDownloadURL();
-      FirebaseFirestore.instance.collection("courier").doc(uid).set(
-          {"courierDetails": courierDetails.json},
+      FirebaseFirestore.instance.collection("courier").doc().set(
+          courierDetails.json,
           SetOptions(merge: true)).then((value) {
         Navigator.pop(context);
         Navigator.popAndPushNamed(context, AppRoutes.HOME_SCREEN);
       });
     });
+  }
+  Future<String> getUserName(String uid1)async
+  {
+   var u="";
+   firestore.collection("users").doc(uid1).get().then((value) {
+      user = value.data();
+      setState(() {
+        
+        u = user!["middleName"];
+        print(u);
+      });
+    });
+    return u;
+
   }
 }

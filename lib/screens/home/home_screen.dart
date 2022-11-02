@@ -7,7 +7,7 @@ import 'package:easy_go/screens/transporter/traveling_Details_Screen.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_go/screens/consumer/reciversList_Screen.dart';
 import 'package:easy_go/screens/transporter/current_transaction_list_transporter.dart';
-import 'package:easy_go/screens/consumer/specific_courier_details.dart';
+import 'package:easy_go/screens/consumer/specific_courier_details_scren.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
