@@ -1,20 +1,20 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_go/screens/transporter/track_transporter_curr_trans.dart';
 import 'package:easy_go/util/firebase.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:easy_go/screens/consumer/specific_courier_details_scren.dart';
 
 class CurrentTransactionsForTr extends StatefulWidget {
-  const CurrentTransactionsForTr({super.key});
+  const CurrentTransactionsForTr({
+    super.key,
+  });
 
   @override
   State<CurrentTransactionsForTr> createState() =>
       _CurrentTransactionsForTrState();
 }
 
-// claass chya outside variable declare kartyat ka
-//karn mg tith initialize nahi hot jr aat kel tr
 class _CurrentTransactionsForTrState extends State<CurrentTransactionsForTr> {
   final storage = FirebaseStorage.instance;
   final uid = FirebaseAuth.instance.currentUser!.uid;
@@ -53,13 +53,13 @@ class _CurrentTransactionsForTrState extends State<CurrentTransactionsForTr> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Text("Loading");
                   }
-                  
+
                   return ListView(
                     children:
                         snapshot.data!.docs.map((DocumentSnapshot document) {
                       Map<String, dynamic> data =
                           document.data()! as Map<String, dynamic>;
-                      
+                      data["id"] = document.id;
                       return ListTile(
                         leading: CircleAvatar(
                           radius: 30.0,
@@ -73,10 +73,20 @@ class _CurrentTransactionsForTrState extends State<CurrentTransactionsForTr> {
                             data['locationFrom'] +
                             " " +
                             data['locationTo']),
-                       
                         onTap: () {
-                           
-                          
+                          Navigator.push(
+                            //pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  CurrentTransactionTransporter(
+                                courierId: data["id"] as String,
+                                senderId: data["courierSenderId"],
+                                courierTitle:
+                                    "${data['courierName']} ${data['locationFrom']} ${data['locationTo']}",
+                              ),
+                            ),
+                          );
                         },
                       );
                     }).toList(),

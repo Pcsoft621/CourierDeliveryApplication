@@ -4,23 +4,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_go/util/firebase.dart';
 import 'package:flutter/material.dart';
 
-class CurrentTransactionTransporter extends StatefulWidget {
+class TrackSenderTransaction extends StatefulWidget {
   final String courierId;
-  final String courierTitle;
-  final String senderId;
-  const CurrentTransactionTransporter(
-      {super.key,
-      required this.courierId,
-      required this.senderId,
-      this.courierTitle = ""});
+  final String transporterId;
+  const TrackSenderTransaction(
+      {super.key, required this.courierId, required this.transporterId});
 
   @override
-  State<CurrentTransactionTransporter> createState() =>
-      _CurrentTransactionTransporterState();
+  State<TrackSenderTransaction> createState() => _TrackSenderTransactionState();
 }
 
-class _CurrentTransactionTransporterState
-    extends State<CurrentTransactionTransporter> {
+class _TrackSenderTransactionState extends State<TrackSenderTransaction> {
   int _index = 0;
   String? transactionId;
   Map<String, dynamic>? transaction;
@@ -32,7 +26,7 @@ class _CurrentTransactionTransporterState
     subscription = firestore
         .collection("transactions")
         .where("courierId", isEqualTo: widget.courierId)
-        .where("transporterId", isEqualTo: uid)
+        .where("transporterId", isEqualTo: widget.transporterId)
         .snapshots()
         .listen((value) {
       if (value.docs.isNotEmpty && value.docs.first.exists) {
@@ -107,7 +101,7 @@ class _CurrentTransactionTransporterState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.courierTitle),
+        title: const Text('My Current Transaction'),
       ),
       body: Container(
         padding: const EdgeInsets.all(20),
@@ -131,7 +125,8 @@ class _CurrentTransactionTransporterState
                             alignment: Alignment.centerLeft,
                             child: Column(
                               children: [
-                                const Text("Waiting For Consumer Confirmation"),
+                                const Text(
+                                    "Waiting For Transporter Confirmation"),
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
@@ -139,10 +134,8 @@ class _CurrentTransactionTransporterState
                                     ElevatedButton(
                                       onPressed: transaction!["discussed"] !=
                                               TransactionAcceptanceState
-                                                  .transporterAccepted.index
-                                          ? () {
-                                              updateState();
-                                            }
+                                                  .senderAccepted.index
+                                          ? updateState
                                           : null,
                                       child: const Text(
                                         'Done',
@@ -176,19 +169,17 @@ class _CurrentTransactionTransporterState
                             children: <Widget>[
                               transaction!["dealConfirmed"] !=
                                       TransactionAcceptanceState
-                                          .senderAccepted.index
+                                          .transporterAccepted.index
                                   ? const Text(
-                                      "Waiting For Consumer Confirmation")
-                                  : const Text("Consumer Confirmed"),
+                                      "Waiting For Transporter Confirmation")
+                                  : const Text("Transporter Confirmed"),
                               Row(
                                 children: [
                                   ElevatedButton(
                                     onPressed: transaction!["dealConfirmed"] !=
                                             TransactionAcceptanceState
-                                                .transporterAccepted.index
-                                        ? () {
-                                            updateState();
-                                          }
+                                                .senderAccepted.index
+                                        ? updateState
                                         : null,
                                     child: const Text(
                                       'Confirm',
@@ -225,26 +216,19 @@ class _CurrentTransactionTransporterState
                                   fontSize: 17, fontWeight: FontWeight.bold)),
                           content: Container(
                             alignment: Alignment.centerLeft,
-                            child: Column(
-                              children: <Widget>[
-                                Row(
-                                  children: [
-                                    transaction!["paymentAccepted"] == null ||
-                                            transaction!["paymentAccepted"] !=
-                                                TransactionAcceptanceState
-                                                    .senderAccepted.index
-                                        ? const Text("Not yet paid")
-                                        : ElevatedButton(
-                                            onPressed: updateState,
-                                            child: const Text(
-                                              'Yes, Payment done',
-                                              style: TextStyle(fontSize: 15),
-                                            ),
-                                          ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                            child: transaction!["paymentAccepted"] == null ||
+                                    transaction!["paymentAccepted"] !=
+                                        TransactionAcceptanceState
+                                            .senderAccepted.index
+                                ? ElevatedButton(
+                                    onPressed: updateState,
+                                    child: const Text(
+                                      'Mark Paid',
+                                      style: TextStyle(fontSize: 15),
+                                    ),
+                                  )
+                                : const Text(
+                                    "Waiting for Transporter confirmation"),
                           ),
                           isActive: _index == 2,
                           state: transaction!['paymentAccepted'] ==
@@ -253,8 +237,7 @@ class _CurrentTransactionTransporterState
                               : StepState.disabled,
                         ),
                         Step(
-                          title: const Text(
-                              'Did you received courier from Consumer?',
+                          title: const Text('Have you given courier?',
                               style: TextStyle(
                                   fontSize: 17, fontWeight: FontWeight.bold)),
                           content: Row(
@@ -265,15 +248,15 @@ class _CurrentTransactionTransporterState
                                               "productReceivedFromSender"] !=
                                           TransactionAcceptanceState
                                               .senderAccepted.index
-                                  ? const Text(
-                                      "Wait, Consumer not yet given courier..")
-                                  : ElevatedButton(
+                                  ? ElevatedButton(
                                       onPressed: updateState,
                                       child: const Text(
-                                        'Yes, received.',
+                                        'Courier Given',
                                         style: TextStyle(fontSize: 15),
                                       ),
-                                    ),
+                                    )
+                                  : const Text(
+                                      "Wait, Transporter not yet received courier."),
                             ],
                           ),
                           isActive: _index == 3,
@@ -294,14 +277,15 @@ class _CurrentTransactionTransporterState
                                             "productDeliveredToReceiver"] !=
                                         TransactionAcceptanceState
                                             .senderAccepted.index
-                                ? const Text("Wait, Receiver not yet confirmed")
-                                : ElevatedButton(
+                                ? ElevatedButton(
                                     onPressed: updateState,
                                     child: const Text(
-                                      'Delivered',
+                                      'Courier delivered',
                                       style: TextStyle(fontSize: 15),
                                     ),
-                                  ),
+                                  )
+                                : const Text(
+                                    "Wait, Transporter not yet confirmed"),
                           ),
                           isActive: _index == 4,
                           state: transaction!['productDeliveredToReceiver'] ==
@@ -366,11 +350,11 @@ class _CurrentTransactionTransporterState
       case 0:
         if (transaction!['discussed'] ==
             TransactionAcceptanceState.none.index) {
-          await transactionRef!.set({
-            "discussed": TransactionAcceptanceState.transporterAccepted.index
-          }, SetOptions(merge: true));
+          await transactionRef!.set(
+              {"discussed": TransactionAcceptanceState.senderAccepted.index},
+              SetOptions(merge: true));
         } else if (transaction!['discussed'] ==
-            TransactionAcceptanceState.senderAccepted.index) {
+            TransactionAcceptanceState.transporterAccepted.index) {
           await transactionRef!.set({
             "discussed": TransactionAcceptanceState.bothAccepted.index,
           }, SetOptions(merge: true));
@@ -382,11 +366,10 @@ class _CurrentTransactionTransporterState
             transaction!['dealConfirmed'] ==
                 TransactionAcceptanceState.none.index) {
           await transactionRef!.set({
-            "dealConfirmed":
-                TransactionAcceptanceState.transporterAccepted.index
+            "dealConfirmed": TransactionAcceptanceState.senderAccepted.index
           }, SetOptions(merge: true));
         } else if (transaction!['dealConfirmed'] ==
-            TransactionAcceptanceState.senderAccepted.index) {
+            TransactionAcceptanceState.transporterAccepted.index) {
           await transactionRef!.set(
               {"dealConfirmed": TransactionAcceptanceState.bothAccepted.index},
               SetOptions(merge: true));
@@ -398,11 +381,10 @@ class _CurrentTransactionTransporterState
             transaction!['paymentAccepted'] ==
                 TransactionAcceptanceState.none.index) {
           await transactionRef!.set({
-            "paymentAccepted":
-                TransactionAcceptanceState.transporterAccepted.index
+            "paymentAccepted": TransactionAcceptanceState.senderAccepted.index
           }, SetOptions(merge: true));
         } else if (transaction!['paymentAccepted'] ==
-            TransactionAcceptanceState.senderAccepted.index) {
+            TransactionAcceptanceState.transporterAccepted.index) {
           await transactionRef!.set({
             "paymentAccepted": TransactionAcceptanceState.bothAccepted.index
           }, SetOptions(merge: true));
@@ -415,10 +397,10 @@ class _CurrentTransactionTransporterState
                 TransactionAcceptanceState.none.index) {
           await transactionRef!.set({
             "productReceivedFromSender":
-                TransactionAcceptanceState.transporterAccepted.index
+                TransactionAcceptanceState.senderAccepted.index
           }, SetOptions(merge: true));
         } else if (transaction!['productReceivedFromSender'] ==
-            TransactionAcceptanceState.senderAccepted.index) {
+            TransactionAcceptanceState.transporterAccepted.index) {
           await transactionRef!.set({
             "productReceivedFromSender":
                 TransactionAcceptanceState.bothAccepted.index
@@ -432,10 +414,10 @@ class _CurrentTransactionTransporterState
                 TransactionAcceptanceState.none.index) {
           await transactionRef!.set({
             "productDeliveredToReceiver":
-                TransactionAcceptanceState.transporterAccepted.index
+                TransactionAcceptanceState.senderAccepted.index
           }, SetOptions(merge: true));
         } else if (transaction!['productDeliveredToReceiver'] ==
-            TransactionAcceptanceState.senderAccepted.index) {
+            TransactionAcceptanceState.transporterAccepted.index) {
           await transactionRef!.set({
             "productDeliveredToReceiver":
                 TransactionAcceptanceState.bothAccepted.index

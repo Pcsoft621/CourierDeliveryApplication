@@ -1,20 +1,16 @@
-import 'package:easy_go/screens/consumer/reciversList_Screen.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'dart:io';
-import 'package:image_picker/image_picker.dart';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_go/models/auth/courier_details.dart' as c;
+import 'package:easy_go/screens/consumer/reciversList_Screen.dart';
+import 'package:easy_go/util/firebase.dart';
+import 'package:easy_go/util/routes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/src/widgets/framework.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:easy_go/models/auth/company_details.dart' as cd;
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:easy_go/util/routes.dart';
-import 'package:easy_go/util/firebase.dart';
-
 
 class CourierDetails extends StatefulWidget {
   const CourierDetails({super.key});
@@ -36,7 +32,7 @@ class _Courier_DetailsState extends State<CourierDetails> {
   final productDescription = TextEditingController();
   final uid = FirebaseAuth.instance.currentUser!.uid;
   Map<String, dynamic>? user;
-  String courierReciverName = "",courierReceiverId = "";
+  String courierReciverName = "", courierReceiverId = "";
   String imageUrl = "";
   List type = [
     {"title": "Box", "value": "1"},
@@ -48,7 +44,9 @@ class _Courier_DetailsState extends State<CourierDetails> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Post Courier Deatails'),),
+      appBar: AppBar(
+        title: Text('Post Courier Deatails'),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -160,9 +158,7 @@ class _Courier_DetailsState extends State<CourierDetails> {
             Material(
               elevation: 4.0,
               shadowColor: Colors.grey,
-              child: Text(
-                courierReciverName
-              ),
+              child: Text(courierReciverName),
             ),
             const SizedBox(height: 12.0),
             Material(
@@ -182,13 +178,12 @@ class _Courier_DetailsState extends State<CourierDetails> {
                           MaterialPageRoute(
                             builder: (context) => ReciversList(),
                           )) as Map<String, dynamic>;
-                          setState(() {
-                            courierReceiverId=user["uid"];
-                          });
+                      setState(() {
+                        courierReceiverId = user["uid"];
+                      });
                     }),
               ),
             ),
-            
             const SizedBox(height: 12.0),
             Material(
               elevation: 4.0,
@@ -250,29 +245,32 @@ class _Courier_DetailsState extends State<CourierDetails> {
                     courierDetails.courierCharges = productCharges.text;
                     courierDetails.courierType = couriertype;
                     courierDetails.courierReceiverId = courierReceiverId;
-                    courierDetails.locationFrom = locationFrom.text.toLowerCase();
+                    courierDetails.locationFrom =
+                        locationFrom.text.toLowerCase();
                     courierDetails.locationTo = locationTo.text.toLowerCase();
                     courierDetails.courierDescription = productDescription.text;
-                    courierDetails.courierSenderId=uid;
+                    courierDetails.courierSenderId = uid;
                     //courierDetails.courierSenderName=getUserName(uid).toString();
                     /*Future future=getUserName(uid).then((value){
                       print("in future"+value.toString());
                       courierReciverName=value;
                     });*/
-                    
-                    
+
                     saveCourierDetails(courierDetails);
-                    
+
                     showDialog(
-                         context: context,
-                         builder: (context) {
+                      context: context,
+                      builder: (context) {
                         return AlertDialog(
-                              content: Text( "this."+courierReciverName + " "+
-                              " " + ""+" "),
+                          content: Text("this." +
+                              courierReciverName +
+                              " " +
+                              " " +
+                              "" +
+                              " "),
                         );
                       },
-                   );
-                    
+                    );
                   },
                   child: const Text(
                     'SUBMIT',
@@ -289,31 +287,31 @@ class _Courier_DetailsState extends State<CourierDetails> {
 
   void saveCourierDetails(c.Courier_Details courierDetails) {
     final uid = FirebaseAuth.instance.currentUser!.uid;
-    courierDetails.courierSender= uid;
+    courierDetails.courierSender = uid;
     final ref = storage.ref("images/courierdetails/").child("$uid/");
     final uploadTask = ref.putFile(File(imageUrl));
     uploadTask.then((p0) async {
       courierDetails.courierImageUrl = await p0.ref.getDownloadURL();
-      FirebaseFirestore.instance.collection("courier").doc().set(
-          courierDetails.json,
-          SetOptions(merge: true)).then((value) {
+      FirebaseFirestore.instance
+          .collection("courier")
+          .doc()
+          .set(courierDetails.json, SetOptions(merge: true))
+          .then((value) {
         Navigator.pop(context);
         Navigator.popAndPushNamed(context, AppRoutes.HOME_SCREEN);
       });
     });
   }
-  Future<String> getUserName(String uid1)async
-  {
-   var u="";
-   firestore.collection("users").doc(uid1).get().then((value) {
+
+  Future<String> getUserName(String uid1) async {
+    var u = "";
+    firestore.collection("users").doc(uid1).get().then((value) {
       user = value.data();
       setState(() {
-        
         u = user!["middleName"];
         print(u);
       });
     });
     return u;
-
   }
 }
