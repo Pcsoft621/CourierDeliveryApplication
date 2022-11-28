@@ -1,13 +1,19 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_go/screens/common/chat/all_chats.dart';
 import 'package:easy_go/screens/common/help.dart';
 import 'package:easy_go/screens/consumer/post_courier_screen.dart';
+import 'package:easy_go/screens/home/consumer_menu.dart';
+import 'package:easy_go/screens/home/transporter_menu.dart';
 import 'package:easy_go/screens/transporter/track_transporter_curr_trans.dart';
-import 'package:easy_go/screens/transporter/transporter_Profile_Screen.dart';
+//import 'package:easy_go/screens/transporter/transporter_next_details.dart';
+import 'package:easy_go/util/firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_go/screens/transporter/traveling_Details_Screen.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_go/screens/consumer/reciversList_Screen.dart';
 import 'package:easy_go/screens/transporter/current_transaction_list_transporter.dart';
 import 'package:easy_go/screens/consumer/specific_courier_details_scren.dart';
+import 'package:easy_go/screens/consumer/current_tran_sender.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -28,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class HomeScreenPage extends StatefulWidget {
   const HomeScreenPage({super.key});
-
+  
   @override
   State<HomeScreenPage> createState() => _HomeScreenPageState();
 }
@@ -36,7 +42,32 @@ class HomeScreenPage extends StatefulWidget {
 class _HomeScreenPageState extends State<HomeScreenPage> {
     int activePage=1;
   //late PageController _pageController;
+  final db=firestore;
+  bool isTransporter=false;
+  final uid = auth.currentUser!.uid;
+  late Map<String, dynamic> user;
+  void initState() {
+  super.initState();
+  initUser();
   
+  }
+  Future<void> initUser ()async
+  {
+    
+     final docRef = db.collection("users").doc(uid);
+     
+     setState(() {
+        docRef.get().then((DocumentSnapshot doc) {
+        setState(() {
+          user = doc.data() as Map<String, dynamic>;    
+          isTransporter =user["isTransporter"];
+          print(isTransporter);
+        });
+
+      });
+
+     });  
+  }
   
 
   List cardList=[
@@ -67,148 +98,8 @@ List<T> map<T>(List list, Function handler) {
     appBar: AppBar(title: Text('EasyGo'),),
     //floatingActionButton: FloatingActionButton,
     drawer: Drawer(
-        
-
-    child: ListView(children: [
-    DrawerHeader(
-      child: Column(
-        children: const [
-          SizedBox(height: 10),
-          Center(
-            child: CircleAvatar(
-              radius: 30,
-              backgroundImage: AssetImage('assets/images/profile.jpg'),
-            ),
-          ),
-          SizedBox(height: 10),
-          Text("Name",
-              style: TextStyle(fontSize: 20, )),
-          Text("pcsoft621@gmail.com",
-              style: TextStyle(fontSize: 20, )),
-        ],
-      )
-    ),
-    
-     const Divider(thickness: .06, color: Color.fromARGB(255,30,29,29)),
-      ListTile(
-        
-        leading: const Icon(Icons.person),
-        title: const Text('My Profile', 
-        ),
-         onTap: () {
-          Navigator.push(context,MaterialPageRoute(
-              builder: (context) => const TransporterProfile()
-            ));
-             // Add Navigation logic here
-        },
-      ),
-      ListTile(
-        
-        leading: const Icon(Icons.notifications),
-        title: const Text('My Requests', 
-                     style: TextStyle(color: Colors.black)),
-         onTap: () {
-             // Add Navigation logic here
-            Navigator.push(context,MaterialPageRoute(
-              builder: (context) => const CurrentTransactionsForTr()
-            )); 
-
-        },
-      ),
-      ListTile(
-        
-        leading: const Icon(Icons.track_changes),
-        title: const Text('Current Transaction Process', 
-        ),
-        onTap: () {
-            Navigator.push(context,MaterialPageRoute(
-              builder: (context) => const Current_tran_Transporter()
-            ));
-
-             // Add Navigation logic here
-        }
-      ),
-      ListTile(
-        
-        leading: const Icon(Icons.chat),
-        title: const Text('Chat', 
-        ),
-        onTap: () {
-          
-          Navigator.push(context,MaterialPageRoute(
-              builder: (context) => const ReciversList()
-            ));
-             // Add Navigation logic here
-        },
-      ),
-      ListTile(
-        
-        leading: const Icon(Icons.list),
-        title: const Text('Post Courier', 
-        ),
-        onTap: () {
-           Navigator.push(context,MaterialPageRoute(
-              builder: (context) => const CourierDetails()
-            ));
-
-          //Navigator.pushNamed(context, "otp");
-             // Add Navigation logic here
-        },
-      ),
-      ListTile(
-        
-        leading: const Icon(Icons.money),
-        title: const Text('My Earnings', 
-        ),
-        onTap: () {
-             // Add Navigation logic here
-        },
-      ),
-      ListTile(
-        
-        leading: const Icon(Icons.details),
-        title: const Text('Previous Deals', 
-        ),
-        onTap: () {
-             // Add Navigation logic here
-        },
-      ),
-      ListTile(
-        leading: const Icon(Icons.subscriptions),
-        title: const Text('Send Courier', 
-        ),
-        onTap: () {
-             // Add Navigation logic here
-        },
-      ),
-      ListTile(
-        leading: const Icon(Icons.eighteen_up_rating_sharp),
-        title: const Text('Ratings', 
-        ),
-        onTap: () {
-             // Add Navigation logic here
-             Navigator.push(
-                context,
-          MaterialPageRoute(builder: (context) => const SpecificCourierDetails()),
-          );
-        },
-      ),
-      ListTile(
-        leading: const Icon(Icons.help),
-        title: const Text('Help', 
-        ),
-        onTap: () {
-                Navigator.push(
-                context,
-          MaterialPageRoute(builder: (context) => const HelpPage()),
-          );
-             // te root use krun hot nsty ka hit mi krun bgitl zal ny call 
-             // ky kl nahi ky ny rahude ja tu ata 
-        },
-      )
-      ])),
+    child: isTransporter==true?Transportermenu():ConsumerMenu()),
     body: Container(
-      
       child:Column(
               children: [
               CarouselSlider(

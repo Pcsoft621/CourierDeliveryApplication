@@ -49,6 +49,7 @@ class _Courier_DetailsState extends State<CourierDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Post Courier Deatails'),),
+      backgroundColor: Colors.lime,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -144,6 +145,7 @@ class _Courier_DetailsState extends State<CourierDetails> {
                 ),
               ),
             ),
+            const SizedBox(height: 12.0),
             Material(
               elevation: 4.0,
               shadowColor: Colors.grey,
@@ -254,6 +256,8 @@ class _Courier_DetailsState extends State<CourierDetails> {
                     courierDetails.locationTo = locationTo.text.toLowerCase();
                     courierDetails.courierDescription = productDescription.text;
                     courierDetails.courierSenderId=uid;
+                    courierDetails.transporterId="";
+                    courierDetails.isRequestedByTransporter=false;
                     //courierDetails.courierSenderName=getUserName(uid).toString();
                     /*Future future=getUserName(uid).then((value){
                       print("in future"+value.toString());
@@ -267,10 +271,11 @@ class _Courier_DetailsState extends State<CourierDetails> {
                          context: context,
                          builder: (context) {
                         return AlertDialog(
-                              content: Text( "this."+courierReciverName + " "+
-                              " " + ""+" "),
+                              content: Text( "Posted Successfully."),
                         );
+                        
                       },
+                      
                    );
                     
                   },
@@ -290,7 +295,7 @@ class _Courier_DetailsState extends State<CourierDetails> {
   void saveCourierDetails(c.Courier_Details courierDetails) {
     final uid = FirebaseAuth.instance.currentUser!.uid;
     courierDetails.courierSender= uid;
-    final ref = storage.ref("images/courierdetails/").child("$uid/");
+    final ref = storage.ref("images/courierdetails/");
     final uploadTask = ref.putFile(File(imageUrl));
     uploadTask.then((p0) async {
       courierDetails.courierImageUrl = await p0.ref.getDownloadURL();

@@ -7,19 +7,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:easy_go/models/auth/company_details.dart' as cd;
+import 'package:easy_go/firebase_options.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:easy_go/util/firebase.dart';
 
-class CompanyDetails extends StatefulWidget {
-  const CompanyDetails({super.key});
-
+class CompanyDetailsEdit extends StatefulWidget {
+  const CompanyDetailsEdit({super.key});
+  
   @override
-  State<CompanyDetails> createState() => _CompanyDetailsState();
+  State<CompanyDetailsEdit> createState() => _CompanyDetailsEditState();
 }
 
-class _CompanyDetailsState extends State<CompanyDetails> {
+class _CompanyDetailsEditState extends State<CompanyDetailsEdit> {
   final nameController = TextEditingController();
+  Map<String, dynamic>? user;
   final typeController = TextEditingController();
+  final uid = FirebaseAuth.instance.currentUser!.uid;
   final numberController = TextEditingController();
   final addressController = TextEditingController();
+   String companyType="";
   var imageUrl = "";
   final storage = FirebaseStorage.instance;
   final companyDetails = cd.CompanyDetails();
@@ -31,13 +37,17 @@ class _CompanyDetailsState extends State<CompanyDetails> {
     {"title": "Other", "value": "5"},
   ];
   String ctype = "";
+  
+  void initState() {
+    
+    getD();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('CompanyDetails'),
-      ),
+      
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -46,17 +56,6 @@ class _CompanyDetailsState extends State<CompanyDetails> {
             const SizedBox(height: 12.0),
             TextFormField(
               controller: nameController,
-              /*validator: (value) {
-                      return value != null && value.isEmpty
-                          ? "Required Field"
-                          : null;
-                    },*/
-              validator: (value) {
-                    if (value == null || value.isEmpty) {
-                return 'Please enter some text';
-                          }
-                    return null;
-                      },
               decoration: const InputDecoration(
                 labelText: "Company Name",
                 fillColor: Colors.black,
@@ -70,11 +69,6 @@ class _CompanyDetailsState extends State<CompanyDetails> {
             ),
             const SizedBox(height: 24.0),
             TextFormField(
-              validator: (value) {
-                      return value != null && value.isEmpty
-                          ? "Required Field"
-                          : null;
-                    },
               controller: addressController,
               decoration: const InputDecoration(
                 labelText: "Company Address",
@@ -90,11 +84,6 @@ class _CompanyDetailsState extends State<CompanyDetails> {
             ),
             const SizedBox(height: 24.0),
             TextFormField(
-              validator: (value) {
-                      return value != null && value.isEmpty
-                          ? "Required Field"
-                          : null;
-                    },
               controller: numberController,
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(
@@ -119,7 +108,6 @@ class _CompanyDetailsState extends State<CompanyDetails> {
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
-                  
                   value: ctype,
                   isDense: true,
                   isExpanded: true,
@@ -130,7 +118,7 @@ class _CompanyDetailsState extends State<CompanyDetails> {
                         child: Text(
                           "Select Company Type",
                         ),
-                        value: ""),
+                        value: ''),
                     ...specitems.map<DropdownMenuItem<String>>((e) {
                       return DropdownMenuItem(
                           child: Text(e['title']), value: e['title']);
@@ -178,12 +166,7 @@ class _CompanyDetailsState extends State<CompanyDetails> {
                   companyDetails.companyPhoneNumber = numberController.text;
                   companyDetails.companyType = typeController.text;
                   companyDetails.companyIdentityUrl = imageUrl;
-                  /*if(_formKey.currentState!.valid()){
-                    ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Processing Data')),
-                      );
-                  }*/
-                  saveCompanyDetails(companyDetails);
+                  UpdateCompanyDetails(companyDetails);
                   showDialog(
                       context: context,
                       barrierDismissible: true,
@@ -201,7 +184,7 @@ class _CompanyDetailsState extends State<CompanyDetails> {
                       });
                 },
                 child: const Text(
-                  'SUBMIT',
+                  'Update',
                   style: TextStyle(fontSize: 17),
                 ),
               ),
@@ -212,17 +195,34 @@ class _CompanyDetailsState extends State<CompanyDetails> {
     );
   }
 
-  void saveCompanyDetails(cd.CompanyDetails companyDetails) {
+  void getD() {
+    
+    setState(() {
+      
+      firestore.collection("users").doc(uid).get().then((value) {
+      user = value.data();
+      setState(() {
+        nameController.text=
+            (user!["travelDetails"] as Map<String, dynamic>)["companyName"];
+        addressController.text = (user!["travelDetails"] as Map<String, dynamic>)["companyAddress"];
+        numberController.text= (user!["travelDetails"] as Map<String, dynamic>)["companyPhoneNumber"];
+        companyType= (user!["travelDetails"] as Map<String, dynamic>)["companyType"];
+      });
+    });
+    });
+  }
+
+  void UpdateCompanyDetails(cd.CompanyDetails companyDetails) {
     final uid = FirebaseAuth.instance.currentUser!.uid;
     final ref = storage.ref("images/userdetails/").child("$uid/");
     final uploadTask = ref.putFile(File(imageUrl));
     uploadTask.then((p0) async {
       companyDetails.companyIdentityUrl = await p0.ref.getDownloadURL();
-      FirebaseFirestore.instance.collection("users").doc(uid).set(
+      FirebaseFirestore.instance.collection("users").doc(uid).update(
           {"companyDetails": companyDetails.json},
-          SetOptions(merge: true)).then((value) {
+          ).then((value) {
         Navigator.pop(context);
-        
+        Navigator.popAndPushNamed(context, AppRoutes.HOME_SCREEN);
       });
     });
   }

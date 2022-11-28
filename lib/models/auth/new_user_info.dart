@@ -32,4 +32,16 @@ class NewUserInfo {
         "adharUrl":adharUrl,
         "profileUrl":profileUrl,
       });
+      NewUserInfo.fromMap(Map<String,dynamic> map){
+     firstName: map["firstName"];
+        lastName: map["lastName"];
+        middleName: map["middleName"];
+        email:map["email"];
+        address: ["address"];
+        isTransporter:["isTransporter"];
+        adharNo:["adharNo"];
+        adharUrl:["adharUrl"];
+        profileUrl:["profileUrl"];
+  }
+  
 }

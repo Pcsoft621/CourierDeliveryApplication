@@ -13,6 +13,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_go/screens/common/contact_us.dart';
+import 'package:easy_go/screens/transporter/transporter_next_details.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,6 +44,7 @@ class MyApp extends StatelessWidget {
         //AppRoutes.CHOOSELOCATION:((context) => const ChooseLocation()),
         AppRoutes.STUSENT_DETAILS:(context) => const Student_Details_Screen(),
         AppRoutes.CONTACT_US_EMAIL:(context) => const Sendmail(),
+        AppRoutes.TRANSPORTER_NEXT_DETAILS:(context) => const TransporterNextDeails(),
       },
     );
   }

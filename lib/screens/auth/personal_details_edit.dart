@@ -9,94 +9,100 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:easy_go/screens/transporter/transporter_next_details.dart';
-
-class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_go/util/firebase.dart';
+class PersonalInfoEdit extends StatefulWidget {
+  const PersonalInfoEdit({super.key});
 
   @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
+  State<PersonalInfoEdit> createState() => _PersonalInfoEditState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
+class _PersonalInfoEditState extends State<PersonalInfoEdit> {
   final userInfo = u.NewUserInfo();
+  Map<String, dynamic>? user;
+  final uid = FirebaseAuth.instance.currentUser!.uid;
   final List<bool> isSelected = [true, false];
   var imageUrl = "";
+  
   var profileImageUrl="";
   final _formKey = GlobalKey<FormState>();
   final storage = FirebaseStorage.instance;
   String s="";
+  final firstNameController=TextEditingController() ;
+  @override
+  void initState() {
+    // TODO: implement initState
+    setState(() {
+      getCurrentUserDetails();
+    
+    super.initState();
+    });
+  }
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
-         appBar: AppBar(
-        title: Title(
-          child: Text('SignIn...'),
-          color: Colors.black,
-        ),
-      ),
+    return Scaffold(
+      
+      body: Scaffold(
         body: Container(
-          alignment: Alignment.center,
           padding: EdgeInsets.all(20),
-          
+          child: SingleChildScrollView(
             child: Form(
             key: _formKey,
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  TextFormField(
+                 TextFormField(
+                    
                     validator: (value) {
                       return value != null && value.isEmpty
                           ? "Required Field"
                           : null;
                     },
+                    controller: firstNameController,
                     onChanged: (value) => userInfo.firstName = value,
                     autofillHints: [AutofillHints.givenName],
-                    decoration: const InputDecoration(
+                    decoration:  InputDecoration(
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(
                           Radius.circular(6.0),
                         ),
                       ),
                       fillColor: Colors.black,
-                      labelText: 'First Name',
+                      labelText:userInfo.firstName,
+                      
                     ),
                   ),
+                  //Text(userInfo.firstName),
+
+
                   const SizedBox(height: 10.0),
                   TextFormField(
-                    validator: (value) {
-                      return value != null && value.isEmpty
-                          ? "Required Field"
-                          : null;
-                    },
+                    
                     onChanged: (value) => userInfo.middleName = value,
                     autofillHints: [AutofillHints.middleName],
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(
                         Radius.circular(6.0),
                       )),
                       fillColor: Colors.black,
-                      labelText: 'Middle Name',
+                      labelText: userInfo.middleName,
                     ),
                   ),
                   const SizedBox(height: 10.0),
                   TextFormField(
-                    validator: (value) {
-                      return value != null && value.isEmpty
-                          ? "Required Field"
-                          : null;
-                    },
+                    
                     onChanged: (value) => userInfo.lastName = value,
                     keyboardType: TextInputType.name,
                     autofillHints: [AutofillHints.familyName],
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(
                         Radius.circular(6.0),
                       )),
                       fillColor: Colors.black,
-                      labelText: 'Last Name',
+                      labelText: userInfo.lastName,
                     ),
                   ),
                   const SizedBox(height: 10.0),
@@ -105,32 +111,33 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     keyboardType: TextInputType.emailAddress,
                     autofillHints: [AutofillHints.email],
                     validator: validateEmail,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(
                         Radius.circular(6.0),
                       )),
                       fillColor: Colors.black,
-                      labelText: 'Email',
+                      labelText: userInfo.email,
                       suffixIcon: Icon(Icons.email),
                     ),
                   ),
                   const SizedBox(height: 10.0),
                   TextFormField(
+                  
                     validator: (value) {
                       return value != null && value.isEmpty
-                          ? "Required valid email Id"
+                          ? "Required Field"
                           : null;
                     },
                     onChanged: (value) => userInfo.address = value,
                     autofillHints: [AutofillHints.postalAddress],
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(
                         Radius.circular(6.0),
                       )),
                       fillColor: Colors.black,
-                      labelText: 'Address',
+                      labelText: userInfo.address,
                       suffixIcon: Icon(Icons.location_on_outlined),
                     ),
                   ),
@@ -138,10 +145,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   const SizedBox(height: 10.0),
                   TextFormField(
                     validator: (value) {
-                      if (value == null || value.length!=12) {
-                        return 'Please enter Valid Adhar Card';}
-                        return null;
-                      },
+                      return value != null && value.isEmpty&& value.length<12
+                          ? "Required 10 digit mobile No"
+                          : null;
+                    },
+                    maxLength: 10,
+                    
                     onChanged: (value) => userInfo.adharNo = value,
                     keyboardType: TextInputType.number,
                     autofillHints: [AutofillHints.birthday],
@@ -150,18 +159,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           borderRadius: BorderRadius.all(
                         Radius.circular(6.0),
                       )),
-                    
                       fillColor: Colors.black,
-                      labelText: 'Adhar No',
-                      
+                      labelText: 'Contact No',
                     ),
-                    maxLength: 12,
                   ),
                   /******************** */
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                    child: const Text("Upload Aadhar Image",
+                    child: const Text("Change Aadhar Image",
                       style: TextStyle(
                           color: Color.fromARGB(255, 244, 246, 247),
                           fontWeight: FontWeight.bold,
@@ -186,7 +192,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                    child: const Text("Upload Profile Image",
+                    child: const Text("Change Profile Image",
                       style: TextStyle(
                           color: Color.fromARGB(255, 244, 246, 247),
                           fontWeight: FontWeight.bold,
@@ -208,63 +214,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       }
                   }),
                 ),
-                  const SizedBox(height: 10.0),
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(),
-                      borderRadius: const BorderRadius.all(Radius.circular(20)),
-                    ),
-                    // padding: const EdgeInsets.all(6),
-                    child: ToggleButtons(
-                      fillColor: Theme.of(context).secondaryHeaderColor,
-                      selectedColor: Theme.of(context).primaryColor,
-                      selectedBorderColor: Theme.of(context).primaryColor,
-                      borderRadius: BorderRadius.circular(20),
-                      onPressed: (int index) {
-                        setState(() {
-                          for (int i = 0; i < isSelected.length; i++) {
-                            isSelected[i] = i == index;
-                          }
-                          userInfo.isTransporter = index == 1;
-                        });
-                      },
-                      isSelected: isSelected,
-                      children: const <Widget>[
-                        Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: Text(
-                            'Consumer',
-                            style: TextStyle(fontSize: 20),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: Text(
-                            'Transporter',
-                            style: TextStyle(fontSize: 20),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  
                   const SizedBox(height: 10.0),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ElevatedButton(
                           onPressed: () {
-                            if(userInfo.isValid)
-                            {
-                              //final var v= imageUrl;
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                "."      
-                                  ),
-                                ),
-                              );
-                            }
-                            if (userInfo.isValid &&
+                            save(userInfo);
+                            /*if (userInfo.isValid &&
                                 _formKey.currentState!.validate()) {
                               showDialog(
                                   context: context,
@@ -283,11 +241,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     );
                                   });
                                   //here was that
-                                  userInfo.firstName=capitalize(userInfo.firstName);
-                                  userInfo.middleName=capitalize(userInfo.middleName);
-                                  userInfo.lastName=capitalize(userInfo.lastName);
-                                  userInfo.address=capitalize(userInfo.address);
-                                  save(userInfo);
+                                  
                             } else {
                               //s=s+userInfo.isValid.toString();
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -297,7 +251,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   ),
                                 ),
                               );
-                            }
+                            }*/
                           },
                           child: const Padding(
                             padding: EdgeInsets.all(16.0),
@@ -312,16 +266,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
             ),
           ),
-          
+          )
         ),
-      );
-    
+      ),
+    );
   }
 
 
   save(u.NewUserInfo u)
   {
-
+    
     final uid = FirebaseAuth.instance.currentUser!.uid;
     final ref1 = storage.ref("images/adhardetails/").child("$uid/");
     final uploadTask1= ref1.putFile(File(imageUrl));
@@ -333,29 +287,35 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final uploadTask = ref.putFile(File(profileImageUrl));
     uploadTask.then((p0) async {
       u.profileUrl = await p0.ref.getDownloadURL();
-      FirebaseFirestore.instance.collection("users").
+      //update
+      //FirebaseFirestore.instance.collection('users').doc(
+        //FirebaseAuth.instance.currentUser!.uid).
+        //set(userInfo,SetOptions(merge: true));
+
+      //save
+     /* FirebaseFirestore.instance.collection("users").
       doc(FirebaseAuth.instance.currentUser!.uid).set(
           userInfo.json,
           SetOptions(merge: true)).then((value) {
         if (userInfo.isTransporter) {
-                                  Navigator.push(
-                                 context,
-                          MaterialPageRoute(builder: (context) => 
-                          const TransporterNextDeails()),
-                           );
+                                  Navigator.pushNamedAndRemoveUntil(
+                                      context,
+                                      AppRoutes.TRANSPORTER_NEXT_DETAILS,
+                                      (route) => false);
                                 } else {
                                   Navigator.pushNamedAndRemoveUntil(
                                       context,
                                       AppRoutes.HOME_SCREEN,
                                       (route) => false);
                                 }
-      });
+      });*/
     });
 
 
    
+
   }
-  String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
+
   String? validateEmail(String? value) {
     String pattern =
         r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]"
@@ -367,5 +327,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
     } else {
       return null;
     }
+  }
+  void getCurrentUserDetails()
+  {
+   setState(() {
+    firestore.collection("users").doc(uid).get().then((value) {
+      user = value.data();
+      setState(() {
+        
+        userInfo.firstName= user!["firstName"];
+        userInfo.lastName=user!["lastName"];
+        userInfo.middleName=user!["middleName"];
+        userInfo.email =user!["email"];
+        userInfo.address=user!["address"];
+        profileImageUrl=user!["profileUrl"];
+        
+      });
+    });
+     
+   });
+    
+
   }
 }

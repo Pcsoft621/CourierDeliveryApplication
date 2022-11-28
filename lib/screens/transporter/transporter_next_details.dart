@@ -5,14 +5,14 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_go/util/routes.dart';
-class TransporterProfile extends StatefulWidget {
-  const TransporterProfile({super.key});
+class TransporterNextDeails extends StatefulWidget {
+  const TransporterNextDeails({super.key});
 
   @override
-  State<TransporterProfile> createState() => _TransporterProfileState();
+  State<TransporterNextDeails> createState() => _TransporterNextDeailsState();
 }
 
-class _TransporterProfileState extends State<TransporterProfile> {
+class _TransporterNextDeailsState extends State<TransporterNextDeails> {
      int _index = 0;
   @override
   Widget build(BuildContext context) {

@@ -15,6 +15,28 @@ class Courier_Details{
   String courierImageUrl="";
   String courierSenderName= "";
   String courierSenderId= "";
+  String transporterId ="";
+  String transporterName ="";
+  bool isRequestedByTransporter=false;
+
+  bool get isValid=>
+    courierName.isNotEmpty&&
+    courierWeight.isNotEmpty&&
+    locationFrom.isNotEmpty&&
+    locationTo.isNotEmpty&&
+    courierReceiverName.isNotEmpty&&
+    courierReceiverId.isNotEmpty&&
+    courierSender.isNotEmpty&&
+    courierType.isNotEmpty&&
+
+    courierCharges.isNotEmpty&&
+    courierDescription.isNotEmpty&&
+    courierImageUrl.isNotEmpty&&
+    courierSenderName.isNotEmpty&&
+    courierSenderId.isNotEmpty&&
+    transporterId.isEmpty;
+
+
 
 
    Map<String, dynamic> get json => Map.of({
@@ -30,6 +52,9 @@ class Courier_Details{
         "courierSenderId": courierSenderId,
         "locationFrom":locationFrom,
         "locationTo":locationTo,
+        "transporterId":transporterId,
+        "transporterName":transporterName,
+        "isRequestedByTransporter":isRequestedByTransporter
       });
 
 }

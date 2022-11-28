@@ -4,8 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:easy_go/screens/transporter/traveling_Details_Screen.dart';
 import 'package:easy_go/util/firebase.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:easy_go/screens/transporter/track_transporter_curr_trans.dart';
 class SpecificCourierDetails extends StatefulWidget {
-  const SpecificCourierDetails({super.key});
+  final String courierId;
+  final String courierTitle;
+  final String senderId;
+  const SpecificCourierDetails({super.key,
+      required this.courierId,
+      required this.senderId,
+      this.courierTitle = ""});
 
   @override
   State<SpecificCourierDetails> createState() => _SpecificCourierDetailsState();
@@ -20,31 +28,75 @@ class _SpecificCourierDetailsState extends State<SpecificCourierDetails> {
   final productReceiver=TextEditingController();
   final productCharges=TextEditingController();
   final productDescription=TextEditingController();
-  Map<String, dynamic>? courier;
-  var cid;
+  final uid = FirebaseAuth.instance.currentUser!.uid;
+  String productImageUrl="";
+  String courierSenderId="";
+  String transporterName="";
+  late Map<String, dynamic> courier;
+  late Map<String, dynamic> user;
   final db=firestore;
   void initState() {
   super.initState();
-  final docRef = db.collection("courier").doc(cid);
-    docRef.get().then(
-      (DocumentSnapshot doc) {
-      courier = doc.data() as Map<String, dynamic>;
-    // ...
-  },
-  onError: (e) => print("Error getting document: $e"),
-  );
-  print(courier!["courierName"]);
-  productName.text = 'Pen';
-  productType.text = 'box';
+  initCourier();
+  
+  }
+  /*
   productWeight.text = '45';
   productCharges.text = '12';
   locationFrom.text = 'Pinke Eethe deee fetch value';
   locationTo.text = 'Pinke Eethe deee fetch value';
   productReceiver.text = 'Pinke Eethe deee fetch value';
-  productDescription.text = 'Pinke Eethe deee fetch value';
+  productDescription.text = 'Pinke Eethe deee fetch value';*/
+
+  Future<void> initCourier ()async
+  {
+    
+     final docRef = db.collection("courier").doc(widget.courierId);
+    docRef.get().then(
+      (DocumentSnapshot doc) {
+        setState(() {
+          courier = doc.data() as Map<String, dynamic>;    
+          productName.text = courier["courierName"];
+          productWeight.text=courier["courierWeight"];
+          productCharges.text=courier["courierCharges"];
+          locationFrom.text=courier["locationFrom"];
+          locationTo.text=courier["locationTo"];
+          productType.text=courier["courierType"];
+          productImageUrl=courier["courierImageUrl"];
+          courierSenderId=courier["courierSenderId"];
+          final d = db.collection("users").doc(courier["courierReceiverId"]);
+          d.get().then((DocumentSnapshot doc1){
+            setState(() {
+              user  =doc1.data() as Map<String,dynamic>;
+            productReceiver.text =user["firstName"]+" "+user["lastName"];
+            });
+            
+          });
+          final dd = db.collection("users").doc(uid);
+          d.get().then((DocumentSnapshot doc2){
+            setState(() {
+              user  =doc2.data() as Map<String,dynamic>;
+            transporterName =user["firstName"]+" "+user["lastName"];
+            });
+            
+          });
+        });
+      });  
+
+      
+    // ...
+  
   }
-
-
+  
+  void sendRequest()
+      {
+        setState(() {
+          firestore.collection("courier").doc(widget.courierId).update({'transporterId':uid});
+          firestore.collection("courier").doc(widget.courierId).update({'transporterName':transporterName});
+          firestore.collection("courier").doc(widget.courierId).update({'isRequestedByTransporter':true});
+        });
+        
+      }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -62,9 +114,9 @@ class _SpecificCourierDetailsState extends State<SpecificCourierDetails> {
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.black,width: 1),
                 shape: BoxShape.rectangle,
-                image: const DecorationImage(
+                image:  DecorationImage(
                   fit: BoxFit.fill,
-                  image: AssetImage('assets/images/pic1.jpg'),
+                  image:NetworkImage(productImageUrl),
                 )
               ),
             ),
@@ -159,13 +211,33 @@ class _SpecificCourierDetailsState extends State<SpecificCourierDetails> {
         ),
 
          const SizedBox(height:15.0), 
+         ElevatedButton(
+          onPressed: (){
+            sendRequest();
+            Navigator.push(
+                            //pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  CurrentTransactionTransporter(
+                                courierId: widget.courierId as String,
+                                senderId: courierSenderId,
+                                courierTitle:
+                                    "${productName.text} ${locationFrom} ${locationTo}",
+                              ),
+                            ),
+                          );
+          },
+          child: Text('Send Request To Sender'),
+          ),
+         
           ],  
        ),
        ),
     );
   }
+  
 }
-
 class SpecificCourierScreenArguments {
   final String courierId;
   //int? resendToken;

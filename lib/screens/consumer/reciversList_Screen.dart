@@ -22,7 +22,7 @@ class _ReciversListState extends State<ReciversList> {
    //   FirebaseFirestore.instance.collection('users').snapshots();
    final storage = FirebaseStorage.instance;
    final uid = FirebaseAuth.instance.currentUser!.uid;
-    final Stream<QuerySnapshot> _usersStream = FirebaseFirestore.instance.collection('users').snapshots();//.where("isTransporter",isNotEqualTo: true)
+   final Stream<QuerySnapshot> _usersStream = FirebaseFirestore.instance.collection('users').snapshots();//.where("isTransporter",isNotEqualTo: true)
 
   @override
   Widget build(BuildContext context) {
